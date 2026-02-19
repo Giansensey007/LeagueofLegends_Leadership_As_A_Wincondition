@@ -135,13 +135,6 @@ def get_league_entries(tier: str, division: str, page: int = 1) -> list[dict]:
     return result if result else []
 
 
-def get_puuid(summoner_id: str) -> str | None:
-    """Resolve a summoner ID to a PUUID."""
-    url = f"{PLATFORM_URL}/lol/summoner/v4/summoners/{summoner_id}"
-    data = _get(url)
-    return data["puuid"] if data else None
-
-
 def get_match_ids(puuid: str, count: int = 20) -> list[str]:
     """Fetch recent ranked match IDs for a PUUID."""
     url = f"{REGIONAL_URL}/lol/match/v5/matches/by-puuid/{puuid}/ids"
@@ -184,11 +177,9 @@ def collect_puuids(cp: dict) -> list[str]:
                 if not entries:
                     break
                 for entry in entries:
-                    sid = entry.get("summonerId")
-                    if sid:
-                        puuid = get_puuid(sid)
-                        if puuid and puuid not in puuids:
-                            puuids.add(puuid)
+                    puuid = entry.get("puuid")
+                    if puuid and puuid not in puuids:
+                        puuids.add(puuid)
                 # save progress periodically
                 if len(puuids) % 50 == 0:
                     cp["puuids"] = list(puuids)
