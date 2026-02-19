@@ -1,0 +1,31 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Data (raw match JSON files are large — regenerate via collect_matches.py)
+Data Collection/raw_matches/*.json
+Data Collection/checkpoint.json
+Data Collection/match_dataset.csv
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.out
+*.run.xml
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.cursor/
+.vscode/
