@@ -44,9 +44,9 @@ MATCHES_PER_SUMMONER = 20       # recent ranked matches to pull per player
 SUMMONERS_PER_DIVISION = 15     # pages of league entries to sample from
 MIN_GAME_DURATION = 900         # exclude remakes (< 15 min = 900 sec)
 
-# Rate limiting — Riot free-tier: 20/1s, 100/2min
+# Rate limiting — Riot dev-key: 20 requests / 1 second, 100 requests / 2 minutes
 RATE_SHORT_LIMIT = 20           # requests per 1-second window
-RATE_LONG_LIMIT = 95            # stay under 100 per 2-min window (safety margin)
+RATE_LONG_LIMIT = 100           # requests per 2-minute window
 RATE_LONG_WINDOW = 120          # 2-minute window in seconds
 
 # Paths
