@@ -125,14 +125,17 @@ def process_match(data: dict, region: str) -> list[dict]:
     patch = info.get("gameVersion", "").rsplit(".", 1)[0]
     game_ended_in_surrender = info.get("gameEndedInSurrender", False)
 
-    # Derive game date from gameCreation (ms epoch)
+    # Derive game date, year, quarter from gameCreation (ms epoch)
     game_creation_ms = info.get("gameCreation", 0)
     if game_creation_ms:
-        game_date = datetime.fromtimestamp(
-            game_creation_ms / 1000, tz=timezone.utc
-        ).strftime("%Y-%m-%d")
+        dt = datetime.fromtimestamp(game_creation_ms / 1000, tz=timezone.utc)
+        game_date = dt.strftime("%Y-%m-%d")
+        game_year = dt.year
+        game_quarter = f"Q{(dt.month - 1) // 3 + 1}"
     else:
         game_date = ""
+        game_year = ""
+        game_quarter = ""
 
     participants = info.get("participants", [])
     if len(participants) != 10:
@@ -229,6 +232,8 @@ def process_match(data: dict, region: str) -> list[dict]:
             "match_id":          match_id,
             "region":            region,
             "game_date":         game_date,
+            "game_year":         game_year,
+            "game_quarter":      game_quarter,
             "team_id":           team_id,
             "win":               int(win),
             "game_duration_min": round(game_duration_min, 2),

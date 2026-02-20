@@ -10,6 +10,7 @@ Data Collection/raw_matches_legacy/
 Data Collection/checkpoint*.json
 Data Collection/match_dataset.csv
 EUW 10000 matches/
+Multi-Region Dataset/
 
 # Logs
 *.log
