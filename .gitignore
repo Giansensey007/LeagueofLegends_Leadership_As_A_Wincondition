@@ -5,8 +5,9 @@ __pycache__/
 .env
 
 # Data (raw match JSON files are large — regenerate via collect_matches.py)
-Data Collection/raw_matches/*.json
-Data Collection/checkpoint.json
+Data Collection/raw_matches/
+Data Collection/raw_matches_legacy/
+Data Collection/checkpoint*.json
 Data Collection/match_dataset.csv
 
 # LaTeX build artifacts
