@@ -27,6 +27,10 @@ Multi-Region Dataset/
 *.fls
 *.synctex.gz
 
+# Archives
+Archiv.zip
+*.zip
+
 # OS
 .DS_Store
 Thumbs.db

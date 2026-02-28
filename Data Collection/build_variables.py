@@ -227,6 +227,26 @@ def process_match(data: dict, region: str) -> list[dict]:
             ping_breakdown[f"team_{field}"] = sum(
                 p.get(field, 0) for p in players)
 
+        # ── EARLY-GAME CONTROLS (from challenges object) ──────────
+        challenges = [p.get("challenges", {}) for p in players]
+        team_early_cs_10 = sum(
+            c.get("laneMinionsFirst10Minutes", 0)
+            + c.get("jungleCsBefore10Minutes", 0)
+            for c in challenges)
+        team_early_gold_adv = sum(
+            c.get("earlyLaningPhaseGoldExpAdvantage", 0)
+            for c in challenges) / 5.0
+        team_early_takedowns = sum(
+            c.get("takedownsFirstXMinutes", 0) for c in challenges)
+
+        # ── SKILL PROXY (from challenges object) ──────────────────
+        solo_kills = [c.get("soloKills", 0) for c in challenges]
+        skillshots_hit = [c.get("skillshotsHit", 0) for c in challenges]
+        skillshots_dodged = [c.get("skillshotsDodged", 0) for c in challenges]
+        avg_solo_kills = sum(solo_kills) / 5.0
+        avg_skillshots = (sum(skillshots_hit) + sum(skillshots_dodged)) / 5.0
+        avg_skill_index = round(avg_solo_kills + avg_skillshots, 4)
+
         row = {
             # ── identifiers / metadata ──
             "match_id":          match_id,
@@ -264,6 +284,14 @@ def process_match(data: dict, region: str) -> list[dict]:
             "team_assists":    team_assists,
             "comp_type":       comp_type,
             "first_blood":     int(obj.get("first_blood", False)),
+
+            # Early-game controls (pre-treatment)
+            "team_early_cs_10":       team_early_cs_10,
+            "team_early_gold_adv":    round(team_early_gold_adv, 4),
+            "team_early_takedowns":   team_early_takedowns,
+
+            # Skill proxy
+            "avg_skill_index":        avg_skill_index,
 
             # Objectives detail
             "dragons":  obj.get("dragons", 0),

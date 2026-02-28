@@ -45,6 +45,12 @@ CODEBOOK = [
     ("team_vision_score", "integer", "Control", "Sum of vision scores across 5 players"),
     ("team_wards_placed", "integer", "Detail", "Sum of wards placed"),
     ("team_damage", "integer", "Control", "Sum of damage dealt to champions"),
+    # Early-game controls (pre-treatment)
+    ("team_early_cs_10", "integer", "Early-Game Control", "Team sum of lane + jungle CS at 10 minutes (from challenges.laneMinionsFirst10Minutes + jungleCsBefore10Minutes)"),
+    ("team_early_gold_adv", "float", "Early-Game Control", "Team avg early laning phase gold/XP advantage (from challenges.earlyLaningPhaseGoldExpAdvantage)"),
+    ("team_early_takedowns", "integer", "Early-Game Control", "Team sum of takedowns in first X minutes (from challenges.takedownsFirstXMinutes)"),
+    # Skill proxy
+    ("avg_skill_index", "float", "Skill Proxy", "Team avg of (soloKills + skillshotsHit + skillshotsDodged) per player — mechanical skill proxy"),
     # Ping breakdown
     ("team_total_pings", "integer", "Detail", "Total pings (all types) by team"),
     ("team_coord_pings", "integer", "Detail", "Coordinating pings (onMyWay + command + assistMe + push)"),
