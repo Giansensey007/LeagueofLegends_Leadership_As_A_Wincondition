@@ -31,6 +31,7 @@ Multi-Region Dataset/
 Archiv.zip
 *.zip
 current_state/
+Sports Analysis*/
 
 # OS
 .DS_Store
