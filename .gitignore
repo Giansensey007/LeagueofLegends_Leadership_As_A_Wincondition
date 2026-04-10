@@ -27,9 +27,10 @@ Multi-Region Dataset/
 *.fls
 *.synctex.gz
 
-# Archives
+# Archives & working copies
 Archiv.zip
 *.zip
+current_state/
 
 # OS
 .DS_Store

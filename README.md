@@ -1,46 +1,59 @@
 # Does It Pay to Play Nice?
 
-**The Effect of Toxic Behavior and Leadership-Style Communication on Win Rates in League of Legends**
+**Toxic Behaviour, Coordination Effort, and Win Probability in Ranked League of Legends**
 
-Master's Seminar — Applied Sports Research, University of Zurich (UZH)  
-Author: Gian Senpinar | February 2026
+Applied Sports Research Seminar, FS 2026 -- University of Zurich
+Author: Gian Senpinar | April 2026
 
 ---
 
 ## Overview
 
-This repository contains the research proposal and data collection pipeline for a quantitative study investigating whether toxic in-game behavior reduces win probability and whether leadership-style communication patterns — operationalized through Riot API ping data — independently predict match outcomes in League of Legends.
+This repository contains the data pipeline, replication script, and outputs for a seminar thesis investigating whether toxic behaviour and coordination effort independently predict win probability in ranked League of Legends, drawing on Lazear's (1989) tournament theory.
+
+The final thesis is included as `Sport_Research_LoL (7)[82].pdf`.
 
 ### Research Questions
 
-1. **RQ1 (Toxicity):** Does higher team-level toxic behavior reduce win probability?
-2. **RQ2 (Leadership):** Does leadership-style communication (structured ping usage, objective coordination) independently increase win probability?
-3. **RQ3 (Moderation):** Is the leadership effect contingent on toxicity level?
+1. **RQ1 (Toxicity):** Is higher team-level toxic behaviour independently associated with lower win probability after controlling for player skill, farming efficiency, and early-game state?
+2. **RQ2 (Coordination):** Is coordination effort independently associated with higher win probability?
+3. **RQ3 (Interaction):** Is the beneficial effect of coordination attenuated in high-toxicity environments?
 
-### Theoretical Framework
+### Key Findings
 
-- **Social Identity Theory** (Tajfel & Turner, 1979)
-- **Transformational Leadership Theory** (Bass, 1985)
-- **Team Conflict Theory** (De Dreu & Weingart, 2003)
+- **Coordination** is a robust positive predictor of win probability across all four model specifications and all four regional subsamples (AME ~ +3.6 pp per SD, p < 0.001 in Model C).
+- **Toxicity** shows no significant independent association with win probability in parsimonious or close-game specifications.
+- **Interaction** is directionally consistent with the attenuation hypothesis but does not reach significance.
 
 ---
 
 ## Repository Structure
 
 ```
-├── proposal/                        # Research proposal
-│   ├── research_proposal.tex        # LaTeX source
-│   ├── research_proposal.pdf        # Compiled PDF (2 pages)
-│   ├── research_proposal.docx       # Word version
-│   └── references.bib               # Bibliography (APA)
-│
-├── Data Collection/                 # Riot API data pipeline
-│   ├── collect_matches.py           # Phase 1: fetch ranked matches from EUW
-│   ├── build_variables.py           # Phase 2: compute study variables → CSV
-│   ├── generate_test_data.py        # Synthetic data for pipeline testing
-│   └── requirements.txt             # Python dependencies
-│
-└── .gitignore
+Sport_Research_LoL (7)[82].pdf      # Final thesis (17 pages)
+
+Data Collection/
+    collect_matches.py              # Phase 1: Riot API data collection (4 regions)
+    build_variables.py              # Phase 2: variable construction from raw JSONs
+    requirements.txt                # Python dependencies
+
+Analysis/
+    analysis.py                     # Complete replication script (Models A-D)
+    generate_codebook.py            # Variable codebook generator
+    figures/
+        fig1_distributions.png      # Score distributions by outcome
+        fig2_coefficients.png       # Coefficient forest plot (Models A-C)
+        fig3_interaction.png        # Predicted win probability by toxicity level
+        fig4_quartiles.png          # Win rates by score quartile
+        fig5_regional.png           # Per-region coefficient plot
+        fig6_vif.png                # VIF diagnostics
+    tables/
+        descriptive_stats.xlsx      # 9 sheets: descriptive stats, VIF, model results
+        results_summary.txt         # Full regression output (all 4 models)
+
+docs/
+    data_collection_flowchart.pdf   # UML activity diagram
+    data_collection_flowchart.png
 ```
 
 ---
@@ -49,77 +62,53 @@ This repository contains the research proposal and data collection pipeline for 
 
 ### Data Source
 
-All data is collected from the **Riot Games Match-V5 API** (`developer.riotgames.com`). The public API provides:
+All data collected from the **Riot Games Match-V5 API**. 19,520 team-level observations from 9,760 ranked matches across EUW, KR, NA, VN. Stratified by rank tier (Gold/Platinum/Emerald) and quarterly time window (Aug 2024 -- Feb 2026).
 
-- Per-player statistics (kills, deaths, assists, gold, CS, vision score)
-- **Per-player ping counts by type** (onMyWay, command, assistMe, danger, push, getBack, enemyMissing, visionCleared)
-- Match timeline events (objective kills, surrender votes)
+### Models
 
-In-game chat logs are **not** available via the public API. All constructs are operationalized through behavioral proxies.
+| Model | Description | N |
+|---|---|---|
+| **A (Baseline)** | Full controls: KDA, CS/min, Gold, Damage, Vision, First Blood, Duration + region FE | 19,520 |
+| **B (Extended)** | + Early CS@10, Early Gold Advantage, Early Takedowns, Skill Index | 19,520 |
+| **C (Parsimonious)** | Low-VIF controls only: KDA, CS/min, Vision, First Blood, Early Gold Adv, Skill Index (**primary**) | 19,520 |
+| **D (Close Games)** | Model C on subsample with gold diff < 10,000 | 11,604 |
 
 ### Variables
 
-| Variable | Operationalization |
+| Variable | Operationalisation |
 |---|---|
-| **Win** (DV) | Binary: 1 = team won, 0 = lost |
-| **Toxicity Score** (IV1) | Standardized composite: Feeding Index + Early Surrender + Vision Neglect |
-| **Leadership Score** (IV2) | Standardized composite: Coordinating Ping Ratio + Objective Coordination + Vision Leadership |
-| **Controls** | Rank tier, champion composition, team KDA, CS/min, patch |
-
-### Analysis
-
-Binary logistic regression with interaction term:
-
-```
-log(P(Win) / (1-P(Win))) = β₀ + β₁·Toxicity + β₂·Leadership + β₃·(Toxicity × Leadership) + βc·Controls
-```
-
-### Sample
-
-2,000 ranked solo/duo matches from EUW, stratified across Gold and Platinum/Emerald tiers.
+| **Win** (DV) | Binary: 1 = team won |
+| **Toxicity Score** (IV1) | Z-scored composite: Feeding Index + Early Surrender + Vision Neglect |
+| **Coordination Score** (IV2) | Z-scored composite: Coordinating Ping Ratio + Objectives + Vision Leadership |
+| **Tox x Coord** | Interaction term |
 
 ---
 
-## Usage
+## Replication
 
 ### Prerequisites
 
-- Python 3.11+
-- Riot Games API key ([developer.riotgames.com](https://developer.riotgames.com))
+- Python 3.9+
+- Dependencies: `pip install pandas numpy scipy matplotlib seaborn openpyxl`
 
-### Setup
+### Run Analysis
+
+```bash
+cd Analysis/
+python analysis.py
+```
+
+This produces all figures (in `figures/`) and tables (in `tables/`) reported in the thesis.
+
+### Data Collection (optional, requires Riot API key)
 
 ```bash
 cd "Data Collection"
-python -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
-```
-
-### Data Collection
-
-```bash
-export RIOT_API_KEY="RGAPI-your-key-here"
-python collect_matches.py       # ~1-2 hours (rate-limited)
+export RIOT_API_KEY="RGAPI-your-key"
+python collect_matches.py       # ~1-2 hours per region
 python build_variables.py       # produces match_dataset.csv
 ```
-
-### Pipeline Test (no API key needed)
-
-```bash
-python generate_test_data.py    # creates 10 synthetic matches
-python build_variables.py       # validates pipeline end-to-end
-```
-
----
-
-## Key References
-
-- Achterbosch, L., Pierce, M., & Simmons, C. (2021). Effects of conflicts on outcomes: The case of multiplayer online games. *Entertainment Computing, 37*, 100399.
-- Bass, B. M. (1985). *Leadership and Performance Beyond Expectations*. Free Press.
-- De Dreu, C. K. W., & Weingart, L. R. (2003). Task versus relationship conflict, team performance, and team member satisfaction: A meta-analysis. *Journal of Applied Psychology, 88*(4), 741–749.
-- Kokkinakis, A. V. et al. (2020). Toxic behaviors in team-based competitive gaming. *CHI Play '20*, ACM.
-- Kwak, H., Blackburn, J., & Han, S. (2015). Exploring cyberbullying and other toxic behavior in team competition online games. *CHI '15*, ACM.
 
 ---
 
