@@ -32,6 +32,11 @@ Archiv.zip
 *.zip
 current_state/
 Sports Analysis*/
+submission_philippe/
+Senpinar_*.zip
+
+# Thesis PDF (submitted separately)
+Sport_Research*.pdf
 
 # OS
 .DS_Store
